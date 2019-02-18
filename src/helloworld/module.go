@@ -40,4 +40,6 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.Route("/greetme", "helloWorld.greetme")
 	registry.Route("/greetme/:nickname", "helloWorld.greetme")
 	registry.Route("/greetflamingo", `helloWorld.greetme(nickname="Flamingo")`)
+
+	registry.HandleData("currenttime", r.helloController.CurrentTime)
 }
