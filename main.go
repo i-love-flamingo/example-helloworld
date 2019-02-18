@@ -2,6 +2,7 @@ package main
 
 import (
 	"flamingo.me/dingo"
+	"flamingo.me/example-helloworld/src/helloworld"
 	"flamingo.me/flamingo/v3"
 	"flamingo.me/flamingo/v3/core/gotemplate"
 	"flamingo.me/flamingo/v3/core/requestlogger"
@@ -14,5 +15,6 @@ func main() {
 		new(zap.Module),           // log formatter
 		new(requestlogger.Module), // requestlogger show request logs
 		new(gotemplate.Module),    // gotemplate installs a go template engine (in debug mode, todo fix this)
+		new(helloworld.Module),
 	})
 }
