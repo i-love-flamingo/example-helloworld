@@ -1,1 +1,4 @@
 <h1>Hello {{ .Name }}</h1>
+{{ if .Nickname }}
+    <h2>Your Nickname is {{ .Nickname }} </h2>
+{{end}}

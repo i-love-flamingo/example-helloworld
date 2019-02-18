@@ -12,7 +12,8 @@ type (
 	}
 
 	helloViewData struct {
-		Name string
+		Name     string
+		Nickname string
 	}
 )
 
@@ -24,5 +25,19 @@ func (controller *HelloController) Get(ctx context.Context, r *web.Request) web.
 	// Calling the Render method from the response helper and render the template "hello"
 	return controller.responder.Render("hello", helloViewData{
 		Name: "World",
+	})
+}
+
+func (controller *HelloController) GreetMe(ctx context.Context, r *web.Request) web.Result {
+	name, err := r.Query1("name")
+	if err != nil {
+		name = "World (default)"
+	}
+
+	nick, _ := r.Params["nickname"]
+
+	return controller.responder.Render("hello", helloViewData{
+		Name:     name,
+		Nickname: nick,
 	})
 }

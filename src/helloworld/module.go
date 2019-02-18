@@ -35,4 +35,9 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 
 	// Bind the controller.Action to the handle "hello":
 	registry.HandleGet("hello", r.helloController.Get)
+
+	registry.HandleGet("helloWorld.greetme", r.helloController.GreetMe)
+	registry.Route("/greetme", "helloWorld.greetme")
+	registry.Route("/greetme/:nickname", "helloWorld.greetme")
+	registry.Route("/greetflamingo", `helloWorld.greetme(nickname="Flamingo")`)
 }
