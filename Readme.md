@@ -1,9 +1,5 @@
 # Flamingo Example Helloworld
 
-## Step by Step Tutorial:
-
-<iframe src="//www.slideshare.net/slideshow/embed_code/key/qhZ2HmrsAPahWa" width="595" height="485" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe> <div style="margin-bottom:5px"> <strong> <a href="//www.slideshare.net/i-love-flamingo/flamingo-hello-world-tutorial" title="Flamingo Hello World Tutorial" target="_blank">Flamingo Hello World Tutorial</a> </strong> from <strong><a href="https://www.slideshare.net/i-love-flamingo" target="_blank">i-love-flamingo</a></strong> </div>
-
 ## Quick reference
 
 ### Precondition
@@ -11,7 +7,7 @@
 
 ### Run the example
 
-```
+```bash
 git clone git@gitlab.aoe.com:shared/i-love-flamingo/example-helloworld.git
 cd example-helloworld
 go run main.go serve
@@ -24,7 +20,7 @@ Open http://localhost:3322
 
 When you checkout the example you already see a very basic flamingo module.
 
-```
+```bash
 git checkout step0
 ```
 
@@ -88,7 +84,7 @@ In Step 1, we will make sure that the 404 error won't stay for long.
 
 You can either start with your current code or you can just checkout the branch "step0" with
 
-```
+```bash
 git checkout step0
 ```
 
@@ -108,7 +104,7 @@ First, we start with some basic information on the folder structure:
 
 Now we create a template to be shown when visiting the page.
 Create a template file called "index.html" in the "templates" folder with basic content:
-```
+```html
 <html>
     <body>
         <h1>Hello World!</h1>
@@ -120,7 +116,7 @@ Create a template file called "index.html" in the "templates" folder with basic 
 But to see this page in the browser, we need some routing.
 
 Navigate to the file "config/routes.yml" and add the route:
-```
+```yaml
 - path: /
   name: index
   controller: flamingo.render(tpl="index")
@@ -142,7 +138,7 @@ Flamingo comes with a couple of builtin controllers, that we used in "routes.yml
 Now, you can start the server again with `go run main.go serve` and see the result in the browser when you visit http://localhost:3322/.
 
 If something doesn't work, you can always just checkout the branch "step1" with
-```
+```bash
 git checkout step1
 ```
 
@@ -150,7 +146,7 @@ git checkout step1
 
 You can either start with your current code or you can just checkout the branch "step1" with 
 
-```
+```bash
 git checkout step1
 ```
 
@@ -306,7 +302,7 @@ have our custom controller, that renders the new template.
 
 If something doesn't work, you can always just checkout the branch "step2" with
 
-```
+```bash
 git checkout step2
 ```
 
@@ -314,7 +310,7 @@ git checkout step2
 
 You can either start with your current code or you can just checkout the branch "step2" with
 
-```
+```bash
 git checkout step2
 ```
 
@@ -362,7 +358,7 @@ func (controller *HelloController) Get(ctx context.Context, r *web.Request) web.
 
 As you can see in the "Get" function, we pass the variable "Name" with the value "World" to the "hello.html" template.
 To use that variable now in our hello.html template, we need to change the template accordingly:
-```
+```gotemplate
 <h1>Hello {{ .Name }}</h1>
 ```
 Now, you can start the server again with `go run main.go serve` and see the result in the browser when you visit http://localhost:3322/.
@@ -371,7 +367,7 @@ Now http://localhost:3322/hello will show "Hello World", where the "World" part 
 
 If something doesn't work, you can always just checkout the branch "step3" with
 
-```
+```bash
 git checkout step3
 ```
 
@@ -379,7 +375,7 @@ git checkout step3
 
 You can either start with your current code or you can just checkout the branch "step3" with
 
-```
+```bash
 git checkout step3
 ```
 
@@ -489,7 +485,7 @@ helloViewData struct {
 ```
 
 Change the "hello.html" template to include the nickname:
-```
+```gotemplate
 <h1>Hello {{ .Name }}</h1>
 {{ if .Nickname }}
     <h2>Your Nickname is {{ .Nickname }} </h2>
@@ -505,7 +501,7 @@ Now, you can start the server again with `go run main.go serve` and see the resu
 
 If something doesn't work, you can always just checkout the branch "step4" with
 
-```
+```bash
 git checkout step4
 ```
 
@@ -513,7 +509,7 @@ git checkout step4
 
 You can either start with your current code or you can just checkout the branch "step4" with
 
-```
+```bash
 git checkout step4
 ```
 
@@ -524,7 +520,7 @@ DataAction work similar to normal Actions, but are called from within templates.
 
 First in our templates/index.html ﬁle we call the templatefunc „data“ to access a Datacontroller:
 
-```html
+```gotemplate
 <html>
     <body>
         <h1>Hello World!</h1>
@@ -574,7 +570,7 @@ access to the request and session data, so it can return everything necessary.
 
 If something doesn't work, you can always just checkout the branch "step5" with
 
-```
+```bash
 git checkout step5
 ```
 
