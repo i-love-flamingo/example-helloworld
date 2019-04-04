@@ -8,7 +8,7 @@
 ### Run the example
 
 ```bash
-git clone git@gitlab.aoe.com:shared/i-love-flamingo/example-helloworld.git
+git clone git@github.com:i-love-flamingo/example-helloworld.git
 cd example-helloworld
 go run main.go serve
 ```
