@@ -378,6 +378,7 @@ If something doesn't work, you can always compare your code with the master bran
 Now it's time to handle URL Parameters
 
 There are 3 ways of getting data into the controller:
+
 * POST/Form data
 * GET Parameter
 * URL Path parameter
@@ -424,6 +425,7 @@ Now http://localhost:3322/greetme?name=Flamingo will show "Hello Flamingo", wher
 #### Path Parameters
 
 Beside "GET" parameters we can also add "Path" parameters
+
 * Extend the module.go, and add another route:
 ```go
 registry.Route("/greetme/:nickname", "helloWorld.greetme")
