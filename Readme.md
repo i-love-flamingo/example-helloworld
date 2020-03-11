@@ -407,7 +407,7 @@ Now we need to add new `greetme` routes in the `src/helloworld/module.go`:
 
 ```go
 // Routes method which defines all routes handlers in module
-func (r *routes) Routes(registry *router.RouterRegistry) {
+func (r *routes) Routes(registry *web.RouterRegistry) {
 	//Bind the controller.Action to the handle "hello":
 	registry.HandleGet("helloWorld.hello", r.helloController.Get)
 	//Bind the path /hello to a handle with the name "hello"
