@@ -31,15 +31,15 @@ func (r *routes) Inject(controller *interfaces.HelloController) {
 // Routes method which defines all routes handlers in module
 func (r *routes) Routes(registry *web.RouterRegistry) {
 	// Bind the path /hello to a handle with the name "hello"
-	registry.Route("/hello", "hello")
+	registry.MustRoute("/hello", "hello")
 
 	// Bind the controller.Action to the handle "hello":
 	registry.HandleGet("hello", r.helloController.Get)
 
 	registry.HandleGet("helloWorld.greetme", r.helloController.GreetMe)
-	registry.Route("/greetme", "helloWorld.greetme")
-	registry.Route("/greetme/:nickname", "helloWorld.greetme")
-	registry.Route("/greetflamingo", `helloWorld.greetme(nickname="Flamingo")`)
+	registry.MustRoute("/greetme", "helloWorld.greetme")
+	registry.MustRoute("/greetme/:nickname", "helloWorld.greetme")
+	registry.MustRoute("/greetflamingo", `helloWorld.greetme(nickname="Flamingo")`)
 
 	registry.HandleData("currenttime", r.helloController.CurrentTime)
 }
