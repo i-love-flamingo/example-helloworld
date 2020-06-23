@@ -3,7 +3,7 @@
 ## Quick reference
 
 ### Precondition
-* Go >= 1.11.4 installed
+* Go >= 1.13 installed
 
 ### Run the example
 
@@ -58,8 +58,8 @@ import (
 func main() {
 	flamingo.App([]dingo.Module{
 		new(zap.Module),           // log formatter
-		new(requestlogger.Module), // requestlogger show request logs
-		new(gotemplate.Module),    // gotemplate installs a go template engine (in debug mode, todo fix this)
+		new(requestlogger.Module), // request logger show request logs
+		new(gotemplate.Module),    // gotemplate enables the gotemplate template engine module
 	})
 }
 ```
@@ -94,9 +94,6 @@ Also we need a few default templates, they live in `templates/error`:
 <pre>{{index . "error"}}</pre>
 ```
 
-We need this setup to make the `gotemplate` Module not panic due to missing error-templates at all. 
-(See Default configuration of the InitModule in Flamingo's `framework/module.go`)
-
 The config file `config/config.yml` is nearly empty for now. We just enable Flamingo's debug mode.
 
 Now we are ready and can already start with `go run main.go`!
@@ -113,12 +110,6 @@ You'll see log-output like
 In Step 1, we will make sure that the 404 error won't stay for long.
 
 ### Step 1
-
-You can either start with your current code or you can just checkout the branch "start-over" with
-
-```bash
-git checkout start-over
-```
 
 At first, we create a template to be shown when visiting the page.
 Create a template file called `index.html` in the `templates` folder with basic content:
@@ -168,7 +159,7 @@ In this step we will create our first own controller and route.
 
 We will now learn step by step how to:
 
-1. Kickstart a new local Flamingo module `helloworld`
+1. Kick start a new local Flamingo module `helloworld`
 2. Write a simple Controller
 3. Register that Controller and a new route in the module
 4. Add another template
@@ -189,7 +180,7 @@ type Module struct {}
 
 // Configure is the default Method a Module needs to implement
 func (m *Module) Configure(injector *dingo.Injector) {
-	// ...
+	
 }
 ```
 
@@ -237,16 +228,19 @@ import (
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
+// HelloController represents our first simple controller
 type HelloController struct {
 	responder *web.Responder
 }
 
+// Inject dependencies
 func (controller *HelloController) Inject(responder *web.Responder) *HelloController {
 	controller.responder = responder
 
 	return controller
 }
 
+// Get is a controller action that renders the `hello.html` template
 func (controller *HelloController) Get(ctx context.Context, r *web.Request) web.Result {
 	// Calling the Render method from the response helper and render the template "hello"
 	return controller.responder.Render("hello", nil)
@@ -264,16 +258,17 @@ package helloworld
 
 import (
 	"flamingo.me/dingo"
-	"flamingo.me/example-helloworld/src/helloworld/interfaces"
 	"flamingo.me/flamingo/v3/framework/web"
+
+	"flamingo.me/example-helloworld/src/helloworld/interfaces"
 )
 
 // Module is our helloWorld Module
 type Module struct{}
 
-// Configure is the default Method a Module need to implement
+// Configure is the default Method a Module needs to implement
 func (m *Module) Configure(injector *dingo.Injector) {
-	//Call Bind helper of router Module
+	// Call Bind helper of router Module
 	// It is a shortcut for: injector.BindMulti((*router.Module)(nil)).To(new(routes))
 	// So what it does is register our routes struct as a router Module - so that it is "known" to the router module
 	web.BindRoutes(injector, new(routes))
@@ -285,7 +280,7 @@ type routes struct {
 	helloController *interfaces.HelloController
 }
 
-// Inject method is called by Dingo and gets an initialized instance of the HelloController passed automatically
+// Inject dependencies - this is called by Dingo and gets an initializes instance of the HelloController passed automatically
 func (r *routes) Inject(controller *interfaces.HelloController) *routes {
 	r.helloController = controller
 
@@ -325,7 +320,7 @@ First we create a new struct, helloViewData, which we use as the data transfer o
 
 We will then pass this data to our template.
 
-For all that, we need to navigate to the file src/helloworld/interfaces/helloController.go and change it as follows:
+For all that, we need to navigate to the file src/helloworld/interfaces/hello_controller.go and change it as follows:
 
 ```go
 package interfaces
@@ -337,6 +332,7 @@ import (
 )
 
 type (
+	// HelloController represents our first simple controller
 	HelloController struct {
 		responder *web.Responder
 	}
@@ -346,13 +342,15 @@ type (
 	}
 )
 
-func (controller *HelloController) Inject(responder *web.Responder) *HelloController {
+// Inject dependencies
+func (controller *HelloController) Inject(responder *web.Responder) {
 	controller.responder = responder
 
 	return controller
 }
 
-func (controller *HelloController) Get(ctx context.Context, r *web.Request) web.Result {
+// Get is a controller action that renders the `hello.html` template
+func (controller *HelloController) Get(_ context.Context, r *web.Request) web.Result {
 	// Calling the Render method from the response helper and render the template "hello"
 	return controller.responder.Render("hello", helloViewData{
 		Name: "World",
@@ -383,16 +381,17 @@ There are 3 ways of getting data into the controller:
 * GET Parameter
 * URL Path parameter
 
-Create a new Action `GreetMe` in your `src/helloworld/interfaces/helloController.go` that will use URL parameters.
+Create a new Action `GreetMe` in your `src/helloworld/interfaces/hello_controller.go` that will use URL parameters.
 
-The Controller uses c.Query1 to get the first GET Query parameter with the key `name`.
+The Controller uses r.Query1 to get the first GET Query parameter with the key `name`.
 
 It will return an error if not set, so we can default it to something we want if it's not set.
 
 We will let it default to "World (default)" for now:
 
 ```go
-func (controller *HelloController) GreetMe(ctx context.Context, r *web.Request) web.Result {
+// GreetMe is a controller action that renders the `hello.html` template ands prints a provided URL param
+func (controller *HelloController) GreetMe(_ context.Context, r *web.Request) web.Result {
 	name, err := r.Query1("name")
 	if err != nil {
 		name = "World (default)"
@@ -408,13 +407,14 @@ Now we need to add new `greetme` routes in the `src/helloworld/module.go`:
 ```go
 // Routes method which defines all routes handlers in module
 func (r *routes) Routes(registry *web.RouterRegistry) {
-	//Bind the controller.Action to the handle "hello":
-	registry.HandleGet("helloWorld.hello", r.helloController.Get)
-	//Bind the path /hello to a handle with the name "hello"
-	registry.MustRoute("/hello", "helloWorld.hello")
-
-	registry.HandleGet("helloWorld.greetme", r.helloController.GreetMe)
-	registry.MustRoute("/greetme", "helloWorld.greetme")
+	// Bind the path /hello to a handle with the name "hello"
+	registry.MustRoute("/hello", "hello")
+    
+    // Bind the controller.Action to the handle "hello":
+    registry.HandleGet("hello", r.helloController.Get)
+    
+    registry.HandleGet("helloWorld.greetme", r.helloController.GreetMe)
+    registry.MustRoute("/greetme", "helloWorld.greetme")
 }
 ```
 
@@ -428,10 +428,12 @@ Beside "GET" parameters we can also add "Path" parameters
 
 * Extend the module.go, and add another route:
 ```go
+// Bind a route with a path parameter
 registry.MustRoute("/greetme/:nickname", "helloWorld.greetme")
 ```
 * We can also set default parameters for routes like this:
 ```go
+// Bind a route with a default value for a param
 registry.MustRoute("/greetflamingo", `helloWorld.greetme(nickname="Flamingo")`)
 ```
 
@@ -439,24 +441,29 @@ Add both routes to the `src/helloworld/module.go` file.
 
 So the routes in the `src/helloworld/module.go` now should look like this:
 ```go
-func (r *routes) Routes(registry *router.RouterRegistry) {
-	//Bind the controller.Action to the handle "hello":
-	registry.HandleGet("helloWorld.hello", r.helloController.Get)
-	//Bind the path /hello to a handle with the name "hello"
-	registry.MustRoute("/hello", "helloWorld.hello")
+// Routes method which defines all routes handlers in module
+func (r *routes) Routes(registry *web.RouterRegistry) {
+	// Bind the path /hello to a handle with the name "hello"
+	registry.MustRoute("/hello", "hello")
+
+	// Bind the controller.Action to the handle "hello":
+	registry.HandleGet("hello", r.helloController.Get)
 
 	registry.HandleGet("helloWorld.greetme", r.helloController.GreetMe)
 	registry.MustRoute("/greetme", "helloWorld.greetme")
+	// Bind a route with a path parameter
 	registry.MustRoute("/greetme/:nickname", "helloWorld.greetme")
+	// Bind a route with a default value for a param
 	registry.MustRoute("/greetflamingo", `helloWorld.greetme(nickname="Flamingo")`)
 }
 ```
 
-Additionally, we need to adjust our controller so we can get the `nickname` path variable via `r.Params`.
+Additionally, we need to adjust our controller action to get the `nickname` path variable via `r.Params`.
 
 Go and change it accordingly:
 ```go
-func (controller *HelloController) GreetMe(ctx context.Context, r *web.Request) web.Result {
+// GreetMe is a controller action that renders the `hello.html` template ands prints a provided URL param
+func (controller *HelloController) GreetMe(_ context.Context, r *web.Request) web.Result {
 	name, err := r.Query1("name")
 	if err != nil {
 		name = "World (default)"
@@ -465,7 +472,7 @@ func (controller *HelloController) GreetMe(ctx context.Context, r *web.Request) 
 	nick, _ := r.Params["nickname"]
 
 	return controller.responder.Render("hello", helloViewData{
-		Name: name,
+		Name:     name,
 		Nickname: nick,
 	})
 }
@@ -501,23 +508,23 @@ If something doesn't work, you can always compare your code with the master bran
 
 #### Requesting Data from DataActions
 
-One of the important things for templates is to be able to "ask for data". There are cases where a controller can not simply create all data for a view, instead the view/template should be able to request data.
+One of the important things for templates is to be able to "ask for data". There are cases where a controller can't simply create all data for a view, instead the view/template should be able to request data.
 DataActions work similar to normal Actions, but are called from within templates. So let us check how we can request data.
 
-First in our templates/index.html ﬁle we call the templatefunc „data“ to access a Datacontroller:
+First in our templates/index.html file we call the templatefunc „data“ to access a data action:
 
 ```gotemplate
 <html>
     <body>
         <h1>Hello World!</h1>
         <h2>This is the index page</h2>
-        <p>Currenttime: {{ data "currenttime" }}</p>
+        <p>Current time: {{ data "currenttime" }}</p>
     </body>
 </html>
 ```
 
 Running `go run main.go serve` and opening  http://localhost:3322/  will now show an exception, because we do not 
-actually have a data controller with the name `currenttime`. We need to add a data action to our helloController:
+actually have a data action with the name `currenttime`. We need to add a data action to our helloController:
 
 ```go
 // CurrentTime is a DataAction that handles data calls from templates
@@ -536,19 +543,23 @@ So the routes part in the module.go should look like this:
 
 ```go
 // Routes method which defines all routes handlers in module
-func (r *routes) Routes(registry *router.Registry) {
-	//Bind the controller.Action to the handle "hello":
-	registry.HandleGet("helloWorld.hello", r.helloController.Get)
-	//Bind the path /hello to a handle with the name "hello"
-	registry.MustRoute("/hello", "helloWorld.hello")
+func (r *routes) Routes(registry *web.RouterRegistry) {
+	// Bind the path /hello to a handle with the name "hello"
+	registry.MustRoute("/hello", "hello")
+
+	// Bind the controller.Action to the handle "hello":
+	registry.HandleGet("hello", r.helloController.Get)
 
 	registry.HandleGet("helloWorld.greetme", r.helloController.GreetMe)
 	registry.MustRoute("/greetme", "helloWorld.greetme")
+	// Bind a route with a path parameter
 	registry.MustRoute("/greetme/:nickname", "helloWorld.greetme")
+	// Bind a route with a default value for a param
 	registry.MustRoute("/greetflamingo", `helloWorld.greetme(nickname="Flamingo")`)
 
 	registry.HandleData("currenttime", r.helloController.CurrentTime)
 }
+
 ```
 
 Now we can run flamingo again and we have the data from the data action available in our template. The DataAction has 
@@ -556,4 +567,4 @@ access to the request and session data, so it can return everything necessary.
 
 If something doesn't work, you can always compare your code with the master branch.
 
-Congratulations! You completed all steps in the Flamingo Helloworld Example and learned some basic Flamingo features.
+Congratulations! You completed all steps in the Flamingo Hello World Example and learned some basic Flamingo features.
