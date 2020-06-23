@@ -104,7 +104,7 @@ The flamingo default app runs on port 3322, so go and visit http://localhost:332
 
 You'll see log-output like
 ```
-2019-07-26T13:42:10.073+0200    INFO    requestlogger/logger.go:131     GET / 404: 42b in 5.788304ms (Error: action for method "GET" not found and no any fallback)     {"area": "root", "traceID": "7158d0b6f0214ac018ccd0b6241da2f3", "spanID": "f16b1510928ff8df", "method": "GET", "path": "/", "client_ip": "[::1]:52572", "businessId": "", "accesslog": 1, "response_code": 404, "response_time": 0.005788304, "referer": ""}
+2019-07-26T13:42:10.073+0200    INFO    requestlogger/logger.go:131     GET / 404: 42b in 5.788304ms (Error: action for method "GET" not found and no any fallback)
 ```
 
 In Step 1, we will make sure that the 404 error won't stay for long.
@@ -124,7 +124,7 @@ Create a template file called `index.html` in the `templates` folder with basic 
 
 But to see this page in the browser, we need some routing.
 
-Create the file `config/routes.yml` and add the route:
+Create the file `config/routes.yaml` and add the route:
 ```yaml
 - path: /
   name: index
@@ -196,6 +196,7 @@ import (
 	"flamingo.me/flamingo/v3/core/gotemplate"
 	"flamingo.me/flamingo/v3/core/requestlogger"
 	"flamingo.me/flamingo/v3/core/zap"
+
 	"flamingo.me/example-helloworld/src/helloworld"
 )
 
@@ -203,8 +204,8 @@ import (
 func main() {
 	flamingo.App([]dingo.Module{
 		new(zap.Module),           // log formatter
-		new(requestlogger.Module), // requestlogger show request logs
-		new(gotemplate.Module),    // gotemplate installs a go template engine
+		new(requestlogger.Module), // request logger show request logs
+		new(gotemplate.Module),    // gotemplate enables the gotemplate template engine module
 		new(helloworld.Module),
 	})
 }
@@ -274,7 +275,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	web.BindRoutes(injector, new(routes))
 }
 
-// routes struct that gets the interface methods for router.Module
+// routes struct - our internal struct that gets the interface methods for router.Module
 type routes struct {
 	// helloController - we will defined routes that are handled by our HelloController - so we need this as a dependency
 	helloController *interfaces.HelloController
@@ -343,7 +344,7 @@ type (
 )
 
 // Inject dependencies
-func (controller *HelloController) Inject(responder *web.Responder) {
+func (controller *HelloController) Inject(responder *web.Responder) *HelloController{
 	controller.responder = responder
 
 	return controller
