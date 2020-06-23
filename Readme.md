@@ -264,7 +264,7 @@ package helloworld
 
 import (
 	"flamingo.me/dingo"
-	"flamingo.me/hello-flamingo/src/helloworld/interfaces"
+	"flamingo.me/example-helloworld/src/helloworld/interfaces"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
