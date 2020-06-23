@@ -14,5 +14,7 @@ prepare-start-over:
 	rm -rf src/helloworld
 	touch src/.gitkeep
 	rm config/routes.yaml
+	rm templates/index.html
+	rm templates/hello.html
 	sed -i '/helloworld.Module/d' main.go
 	sed -i '/example-helloworld/src/helloworld/d' main.go
