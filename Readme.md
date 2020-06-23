@@ -36,7 +36,7 @@ First, we start with some basic information on the folder structure:
 * templates/
     * Templates for Go Templates
 * go.mod
-    * the projects dependencies
+    * The projects dependencies
 * main.go
     * Entry point for our project
 
@@ -64,37 +64,7 @@ func main() {
 }
 ```
 
-Also we need a few default templates, they live in `templates/error`:
-
-`403.html`
-```html
-<h1>Forbidden</h1>
-<hr/>
-<pre>{{index . "error"}}</pre>
-```
-
-`404.html`
-```html
-<h1>File Not Found</h1>
-<hr/>
-<pre>{{index . "error"}}</pre>
-```
-
-`503.html`
-```html
-<h1>Unavailable</h1>
-<hr/>
-<pre>{{index . "error"}}</pre>
-```
-
-`withCode.html`
-```html
-<h1>Error {{index . "code"}}</h1>
-<hr/>
-<pre>{{index . "error"}}</pre>
-```
-
-The config file `config/config.yml` is nearly empty for now. We just enable Flamingo's debug mode.
+The config file `config/config.yaml` is nearly empty for now. We just enable Flamingo's debug mode.
 
 Now we are ready and can already start with `go run main.go`!
 
