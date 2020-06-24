@@ -1,9 +1,0 @@
-- path: /
-  name: index
-  controller: flamingo.render(tpl="index")
-
-- path: /anotherPath
-  controller: flamingo.render(tpl="index")
-
-- path: /redirect
-  controller: flamingo.redirect(to="index")
