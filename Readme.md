@@ -3,7 +3,7 @@
 ## Quick reference
 
 ### Precondition
-* Go >= 1.13 installed
+* Go >= 1.17 installed
 
 ### Run the example
 
@@ -30,7 +30,7 @@ Here are some details for the files present in your project ( `flamingo.me/examp
 First, we start with some basic information on the folder structure:
 
 * config/
-    * Here we ﬁnd our configuration and routing files
+    * Here we find our configuration and routing files
 * src/
     * Source code for the project
 * templates/
@@ -59,7 +59,7 @@ func main() {
 	flamingo.App([]dingo.Module{
 		new(zap.Module),           // log formatter
 		new(requestlogger.Module), // request logger show request logs
-		new(gotemplate.Module),    // gotemplate enables the gotemplate template engine module
+		new(gotemplate.Module),    // enables the gotemplate template engine module
 	})
 }
 ```
@@ -155,7 +155,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 ```
 
 Our Module is a `dingo.Module`, which can be used in our Flamingo project. To load our own Module we need to add a line
-in the main.go file. So open your project `main.go` and add the new Module to the Bootstrap, it should look like this:
+in the `main.go` file. So open your project `main.go` and add the new Module to the Bootstrap, it should look like this:
 
 ```go
 package main
@@ -494,7 +494,7 @@ First in our templates/index.html file we call the templatefunc „data“ to ac
 </html>
 ```
 
-Running `go run main.go serve` and opening  http://localhost:3322/  will now show an exception, because we do not 
+Running `go run main.go serve` and opening http://localhost:3322/ will now show an exception, because we do not 
 actually have a data action with the name `currenttime`. We need to add a data action to our helloController:
 
 ```go
@@ -533,7 +533,7 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 
 ```
 
-Now we can run flamingo again and we have the data from the data action available in our template. The DataAction has 
+Now we can run flamingo again, and we have the data from the data action available in our template. The DataAction has 
 access to the request and session data, so it can return everything necessary.
 
 If something doesn't work, you can always compare your code with the master branch.

@@ -15,7 +15,7 @@ func main() {
 	flamingo.App([]dingo.Module{
 		new(zap.Module),           // log formatter
 		new(requestlogger.Module), // request logger show request logs
-		new(gotemplate.Module),    // gotemplate enables the gotemplate template engine module
+		new(gotemplate.Module),    // enables the gotemplate template engine module
 		new(helloworld.Module),
 	})
 }
