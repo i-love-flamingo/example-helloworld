@@ -3,7 +3,7 @@
 ## Quick reference
 
 ### Precondition
-* Go >= 1.17 installed
+* Go >= 1.19 installed
 
 ### Run the example
 
@@ -18,7 +18,7 @@ Open http://localhost:3322
 
 ### Start Over
 
-When you checkout the example you already see a very basic flamingo module.
+When you check out the example you already see a very basic flamingo module.
 
 ```bash
 git checkout start-over
