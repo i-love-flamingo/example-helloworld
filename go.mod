@@ -1,6 +1,6 @@
 module flamingo.me/example-helloworld
 
-go 1.17
+go 1.19
 
 require (
 	flamingo.me/dingo v0.2.9
