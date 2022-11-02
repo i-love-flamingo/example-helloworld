@@ -304,7 +304,7 @@ And then access the route that we configured above by opening the url "http://lo
 
 Congratulation :-)
 
-## Step 4: Using parameters in routes and pass data to template
+## Step 3: Using parameters in routes and pass data to template
 
 The next feature we are trying is how to use URL parameters and how to pass data to the template.
 Therefor we want that the application response to the route "/greet/<name>". "<name>" in the route is a dynamic path parameter. So if we call "http://localhost:3322/greet/mickey" we do expect to see "Hello Mickey".
@@ -373,7 +373,7 @@ That was easy - wasn't it.
 > * Use GET Parameter in the Url - which you can access with `r.Query1("parametername")` helper
 > * POST/Form data - which you can access with `r.Form()`. Or you may want to have a look into the separate [Flamingo "Form" module](https://github.com/i-love-flamingo/form).
 
-### Step 6: Introducing configurations
+### Step 4: Introducing configurations
 
 Flamingo comes with a configuration concept. Configurations are useful to configure behaviour and features insides your application. 
 It is of course also used in flamingo core modules to enable certain features.
@@ -402,7 +402,7 @@ CONTEXT="dev" go run main.go config
 > Read more about the [configuration features](https://docs.flamingo.me/2.%20Flamingo%20Core/2.%20Framework%20Modules/Configuration.html) in flamingo.
 
 
-### Step 7: Operational Readiness and other helpful modules
+### Step 5: Operational Readiness and other helpful modules
 
 Flamingo comes with features and modules that makes it easy to run and monitor applications in production.
 So lets add some typical modules to the application bootstrap:
