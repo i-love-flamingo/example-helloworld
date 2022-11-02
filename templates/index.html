@@ -2,6 +2,14 @@
     <body>
         <h1>Hello World!</h1>
         <h2>This is the index page</h2>
-        <p>Current time: {{ data "currenttime" }}</p>
+        <p>Current time received via data helper: {{ data "currenttime" }}</p>
+        <h2>Some configured routes:</h2>
+        <ul>
+            <li> <a href="{{ url "helloWorld.hello" }}">Hello Route</a> </li>
+            <li> <a href="{{ url "helloWorld.greet" }}">Greet Route without parameter</a> </li>
+            <li> <a href="{{ url "helloWorld.greet" "nickname" "mickey" }}">Greet with Nickname parameter "Mickey"</a> </li>
+            <li> <a href="{{ url "helloWorld.greet" "nickname" "mickey"}}?name=Maus">Greet with Nickname parameter "Mickey" and Name URL parameter</a> </li>
+            <li> <a href="{{ url "redirectTest" }}">redirectTest handle to index page</a> </li>
+        </ul>
     </body>
 </html>

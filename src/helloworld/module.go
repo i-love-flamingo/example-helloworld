@@ -12,9 +12,7 @@ type Module struct{}
 
 // Configure is the default Method a Module needs to implement
 func (m *Module) Configure(injector *dingo.Injector) {
-	// Call Bind helper of router Module
-	// It is a shortcut for: injector.BindMulti((*router.Module)(nil)).To(new(routes))
-	// So what it does is register our routes struct as a router Module - so that it is "known" to the router module
+	// register our routes struct as a router Module - so that it is "known" to the router module
 	web.BindRoutes(injector, new(routes))
 }
 
@@ -34,17 +32,18 @@ func (r *routes) Inject(controller *interfaces.HelloController) *routes {
 // Routes method which defines all routes handlers in module
 func (r *routes) Routes(registry *web.RouterRegistry) {
 	// Bind the path /hello to a handle with the name "hello"
-	registry.MustRoute("/hello", "hello")
+	registry.MustRoute("/hello", "helloWorld.hello")
 
 	// Bind the controller.Action to the handle "hello":
-	registry.HandleGet("hello", r.helloController.Get)
+	registry.HandleGet("helloWorld.hello", r.helloController.Hello)
 
-	registry.HandleGet("helloWorld.greetme", r.helloController.GreetMe)
-	registry.MustRoute("/greetme", "helloWorld.greetme")
+	registry.HandleGet("helloWorld.greet", r.helloController.Greet)
+	registry.MustRoute("/greet", "helloWorld.greet")
 	// Bind a route with a path parameter
-	registry.MustRoute("/greetme/:nickname", "helloWorld.greetme")
+	registry.MustRoute("/greet/:nickname", "helloWorld.greet")
+
 	// Bind a route with a default value for a param
-	registry.MustRoute("/greetflamingo", `helloWorld.greetme(nickname="Flamingo")`)
+	registry.MustRoute("/greetflamingo", `helloWorld.greet(nickname="Flamingo")`)
 
 	registry.HandleData("currenttime", r.helloController.CurrentTime)
 }

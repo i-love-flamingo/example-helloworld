@@ -1,142 +1,110 @@
-# Flamingo Example Helloworld
+# Flamingo Tutorial "Example Helloworld"
 
-## Quick reference
+The "example-helloworld" is a tutorial to learn the basic concepts of the web framework flamingo in a step by step process.
+In this tutorial we will create a web application that renders a template with some dynamic data. 
+At the end of the tutorial this application is production ready and can be deployed in a container runtime.
 
-### Precondition
-* Go >= 1.17 installed
+You will get in touch with some of the basic concepts and principles, when you create go applications with the web framework flamingo.
 
-### Run the example
+For example:
+* The basic module structure in a flamingo project
+* How to register routes and assign controller actions to them
+* The usage of the dependency injection "dingo"
+* The configuration concept and how to use configuration contexts
+* What modules and features flamingo provides for "operational readyness" - like healthchecks, metrics, logging etc.
 
+## Quickie: Run the (final) example
+
+The tutorial is most helpful if you take the time and run through the steps below.
+However - for those who do not have enough time - and just want to have a look at the final result (and do the turorial later ;-) ) - this is how to run the example: 
 ```bash
 git clone git@github.com:i-love-flamingo/example-helloworld.git
 cd example-helloworld
 go run main.go serve
 ```
-Open http://localhost:3322
+Open http://localhost:3322 to access the example application.
 
-## Tutorial Steps
+# Step by Step Tutorial
 
-### Start Over
+## Step 1: Create an empty Application
 
-When you checkout the example you already see a very basic flamingo module.
+We start by creating a new Go application and we are adding the flamingo framework as a dependency:
 
-```bash
-git checkout start-over
+```ssh
+mkdir FlamingoExample
+cd FlamingoExample
+go mod init FlamingoExample
+go get flamingo.me/flamingo/v3
 ```
+The flamingo framework will also add its dependencies - for example the modules and libraries, that we will use later to enable the endpoints for operational readyness. 
 
-Here are some details for the files present in your project ( `flamingo.me/example-helloworld` )
-
-#### Folder structure
-First, we start with some basic information on the folder structure:
-
-* config/
-    * Here we find our configuration and routing files
-* src/
-    * Source code for the project
-* templates/
-    * Templates for Go Templates
-* go.mod
-    * The projects dependencies
-* main.go
-    * Entry point for our project
-
-
-The `main.go` file looks like this
+The next thing you need to do is to edit the `main.go` file and create your very basic flamingo application.
+This is simple - we just need to call the flamingo boostrap:
 
 ```go
 package main
 
-import (
-	"flamingo.me/dingo"
-	"flamingo.me/flamingo/v3"
-	"flamingo.me/flamingo/v3/core/gotemplate"
-	"flamingo.me/flamingo/v3/core/requestlogger"
-	"flamingo.me/flamingo/v3/core/zap"
-)
+import "flamingo.me/flamingo/v3"
 
-// main is our entry point
 func main() {
-	flamingo.App([]dingo.Module{
-		new(zap.Module),           // log formatter
-		new(requestlogger.Module), // request logger show request logs
-		new(gotemplate.Module),    // enables the gotemplate template engine module
-	})
+  flamingo.App(nil)
 }
 ```
 
-The config file `config/config.yaml` is nearly empty for now. We just enable Flamingo's debug mode.
+The `flamingo.App()` method is the main entry point to run a flamingo application. 
+It makes sure that the dependency injection is configured and will run the root command.
+The method expects a list of flamingo modules. 
+We will add modules later in this tutorial - for now we do not load any modules.
 
-Now we are ready and can already start with `go run main.go`!
+Lets start this very basic flamingo application:
 
-You can start the server with `go run main.go serve` but you'll be stuck with 404 errors for now. (Obviously, since we do not have any routes registered.)
-
-The flamingo default app runs on port 3322, so go and visit http://localhost:3322/
-
-You'll see log-output like
-```
-2019-07-26T13:42:10.073+0200    INFO    requestlogger/logger.go:131     GET / 404: 42b in 5.788304ms (Error: action for method "GET" not found and no any fallback)
+```shell
+go run main.go
 ```
 
-In Step 1, we will make sure that the 404 error won't stay for long.
+What you see is the basic command printout of flamingo. ( Under the hood flamingo uses [cobra](https://github.com/spf13/cobra) as command library. )
 
-### Step 1
+```shell
+Flamingo main
 
-At first, we create a template to be shown when visiting the page.
-Create a template file called `index.html` in the `templates` folder with basic content:
-```html
-<html>
-    <body>
-        <h1>Hello World!</h1>
-        <h2>This is the index page</h2>
-    </body>
-</html>
+Usage:
+  main [command]
+
+Examples:
+Run with -h or -help to see global debug flags
+
+Available Commands:
+  completion  generate the autocompletion script for the specified shell
+  config      Config dump
+  handler     Dump the Handlers and its registered methods
+  help        Help about any command
+  routes      Routes dump
+  serve       Default serve command - starts on Port 3322
+
+Flags:
+  -h, --help   help for main
+
+Use "main [command] --help" for more information about a command.
 ```
 
-But to see this page in the browser, we need some routing.
+Lets run the flamingo application by using the "serve" command: `go run main.go serve`
+And then open a browser with the url http://localhost:3322/
 
-Create the file `config/routes.yaml` and add the route:
-```yaml
-- path: /
-  name: index
-  controller: flamingo.render(tpl="index")
-```
-This is the basic route on path "/" and it renders the "index" template via the builtin flamingo.render controller.
+Since we did not configure any routes you will see the default 404 response of flamingo:
+![img.png](docs/404img.png)
 
-#### Builtin controllers
-Flamingo comes with a couple of builtin controllers, that we can use in `routes.yml`. E.g.:
+And on the command line you also can see the proper logging of flamingo.
 
-* flamingo.render(tpl="...")
-    * Default template renderer
-* flamingo.redirect(to="...") and flamingo.redirectPermanent(to="...")
-    * Default "redirect to other route" controller
-* flamingo.redirectUrl(url="...") and flamingo.redirectPermanentUrl(url="...")
-    * Default "redirect to a URL" controller
-* flamingo.error and flamingo.notfound
-    * Default Flamingo error and notfound controller
+## Step 2: Add the first module
 
-Now, you can start the server again with `go run main.go serve` and see the result in the browser when you visit http://localhost:3322/.
+Everything in a flamingo application should be bundled in modules. 
+Modules help to structure the code in useful parts (bounded contexts).
+So for our hello world example we will create a module "helloworld". 
+Every module in flamingo need to provide an implementation of the module interface. 
+This acts as an entry to configure your module.
 
-If something doesn't work, you can always compare your code with the master branch.
-
-### Step 2
-
-#### Custom Controller
-
-In this step we will create our first own controller and route.
-
-* In Flamingo this is done with a custom module.
-* We place our custom module in `src/helloworld/module.go`
-
-We will now learn step by step how to:
-
-1. Kick start a new local Flamingo module `helloworld`
-2. Write a simple Controller
-3. Register that Controller and a new route in the module
-4. Add another template
-
-Let us start with the `helloworld` module:
-
-Create a new file `module.go` inside  `src/helloworld` with:
+As a best practice the modules inside a project should be created inside the folder `src`. 
+So lets kickstart your first module by creating a file `src/helloworld/module.go` with the following content:
 
 ```go
 package helloworld
@@ -154,48 +122,43 @@ func (m *Module) Configure(injector *dingo.Injector) {
 }
 ```
 
-Our Module is a `dingo.Module`, which can be used in our Flamingo project. To load our own Module we need to add a line
-in the `main.go` file. So open your project `main.go` and add the new Module to the Bootstrap, it should look like this:
+And now add this module to the bootstrap in our `main.go` file:
 
 ```go
 package main
 
 import (
-	"flamingo.me/dingo"
-	"flamingo.me/flamingo/v3"
-	"flamingo.me/flamingo/v3/core/gotemplate"
-	"flamingo.me/flamingo/v3/core/requestlogger"
-	"flamingo.me/flamingo/v3/core/zap"
-
-	"flamingo.me/example-helloworld/src/helloworld"
+  "FlamingoExample/src/helloworld"
+  "flamingo.me/dingo"
+  "flamingo.me/flamingo/v3"
 )
 
-// main is our entry point
 func main() {
-	flamingo.App([]dingo.Module{
-		new(zap.Module),           // log formatter
-		new(requestlogger.Module), // request logger show request logs
-		new(gotemplate.Module),    // gotemplate enables the gotemplate template engine module
-		new(helloworld.Module),
-	})
+  flamingo.App(
+    []dingo.Module{
+      new(helloworld.Module),
+    },
+  )
 }
+
 ```
 
-Now we create an own controller, first we start with some information about controllers:
+### Hello World Controller
 
-* A Controller in Flamingo is a struct with a couple of methods, used as „Actions“
-* Controllers can use the `*web.Responder` to create responses
-* We can also simply use standard http.Handler from Go's stdlib
+As a best practice we recommend that a typical module in an flamingo application follows best practice layering to seperate business logic from interface logic etc.
+Thats why we recommend to create controllers inside a folder "interfaces".
 
-Create a folder `interfaces` in your `helloworld` Module, then create a go file called `hello_controller.go` in the 
-`interfaces` folder with the following content:
+
+> **_Additional explanation:_**  We recommend clean code architectures and the usage of the architecture concept "ports and adapters".
+> If you like you can read more about suggested [inner module structure](https://docs.flamingo.me/2.%20Flamingo%20Core/1.%20Flamingo%20Basics/3.%20Flamingo%20Module%20Structure.html) and [ports and adapters](https://docs.flamingo.me/2.%20Flamingo%20Core/1.%20Flamingo%20Basics/4.%20Ports%20and%20Adapters.html) in the documentation.
+
+So lets create your first controller in the file `src/helloworld/interfaces/hello_controller.go` with a first action method:
 
 ```go
 package interfaces
 
 import (
 	"context"
-
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
@@ -218,20 +181,30 @@ func (controller *HelloController) Get(ctx context.Context, r *web.Request) web.
 }
 ```
 
-Our Controller reacts on GET requests and renders templates.
+Lets have a closer look at the code and walk through the important lines together:
 
-Beside `Render()` there are more functions such as `Data()`, `RouteRedirect()` and `NotFound()`.
+* In line 8 we define the controller struct. In flamingo a web controller should use the `web.Responder` type to render responses. So we define this as a private dependency in our controller.
+* In line 13 we are using the dependency injection feature of dingo (=the flamingo dependency injection) by implementing an Inject method, that requests all the dependency as parameters. Dingo will make sure that the controller will get its dependencies injected.
+* In line 20 we are implementing our first action method. Each web action gets the go context and the current web request as parameter. 
+* In line 22 we are using the Responder type to render a response. The first parameter is the name of the template that should be rendered - we will create it later.
 
-Now, we have to register our controller and a route in our `module.go` file:
+
+> **_More about Dingo:_**  Dingo is the dependency injection that it used in flamingo.
+> It supports all the features you expect from a modern DI solution, such as singletons, multi-bindings, scoping etc.
+> The usage and interface is similar to Google Guice. You can read more about [Dingo](https://docs.flamingo.me/3.%20Flamingo%20Modules/1.%20dingo.html) in the documentation.
+
+
+### Define routes
+Next we need to tell flamingo under which route it should call the controller action.
+Therefore you need to edit the `module.go` file inside your "helloworld" module:
 
 ```go
 package helloworld
 
 import (
-	"flamingo.me/dingo"
-	"flamingo.me/flamingo/v3/framework/web"
-
-	"flamingo.me/example-helloworld/src/helloworld/interfaces"
+  "FlamingoExample/src/helloworld/interfaces"
+  "flamingo.me/dingo"
+  "flamingo.me/flamingo/v3/framework/web"
 )
 
 // Module is our helloWorld Module
@@ -239,303 +212,273 @@ type Module struct{}
 
 // Configure is the default Method a Module needs to implement
 func (m *Module) Configure(injector *dingo.Injector) {
-	// Call Bind helper of router Module
-	// It is a shortcut for: injector.BindMulti((*router.Module)(nil)).To(new(routes))
-	// So what it does is register our routes struct as a router Module - so that it is "known" to the router module
-	web.BindRoutes(injector, new(routes))
+	
+  // register our routes struct as a router Module - so that it is "known" to the router module
+  web.BindRoutes(injector, new(routes))
 }
 
 // routes struct - our internal struct that gets the interface methods for router.Module
 type routes struct {
-	// helloController - we will defined routes that are handled by our HelloController - so we need this as a dependency
-	helloController *interfaces.HelloController
+  // helloController - we will defined routes that are handled by our HelloController - so we need this as a dependency
+  helloController *interfaces.HelloController
 }
 
 // Inject dependencies - this is called by Dingo and gets an initializes instance of the HelloController passed automatically
 func (r *routes) Inject(controller *interfaces.HelloController) *routes {
-	r.helloController = controller
+  r.helloController = controller
 
-	return r
+  return r
 }
 
 // Routes method which defines all routes handlers in module
 func (r *routes) Routes(registry *web.RouterRegistry) {
-	// Bind the path /hello to a handle with the name "hello"
-	registry.MustRoute("/hello", "hello")
+  // Bind the path /hello to a handle with the name "hello"
+  registry.MustRoute("/hello", "hello")
 
-	// Bind the controller.Action to the handle "hello":
-	registry.HandleGet("hello", r.helloController.Get)
+  // Bind the controller.Action to the handle "hello":
+  registry.HandleGet("hello", r.helloController.Hello)
 }
 ```
 
-We also need a matching template, so we create a template for our own controller.
-Create a template file called `hello.html` in the `templates` folder with some simple content:
+Lets walk through the code again: 
+* In flamingo routes need to be registered with the help of a "RouterModule". A "RouterModule" needs to implement the method "Routes", where it can access the flamingo RouterRegistry. 
+  This is what the code does in line 20 and 33.
+* In our example we want to register our "Hello" action from our controller to answer on the route "/hello". Routing registration in flamingo works in two steps: First a route is assigned a so called handler. A handler is a string that represents a unique name - in this case "hello". 
+  And second the handler gets an action assigned. (See line 38)
+* Also here dependency injection is used, to pass a controller instance to the "RoutesModule". (See line 26)
+* The RoutesModule itself is registered in the main Module configuration (See line 16).
 
-```html
-<h1>Hello Controller</h1>
-```
 
-Now, you can start the server again with `go run main.go serve` and on http://localhost:3322/hello we will now 
-have our custom controller, that renders the new template.
+> **_About Routing:_**  Flamingo uses the handler to support reverse routing: This means flamingo can generate correct links for defined handlers, which is very helpful when you want to adjust routes or domains later in a project.
+> Also the handler concept allows to override routes in other modules,
+> You can read more about [Routing](https://docs.flamingo.me/2.%20Flamingo%20Core/2.%20Framework%20Modules/Web%20module/ReadmeRouter.html) in the documentation.
 
-If something doesn't work, you can always compare your code with the master branch.
 
-### Step 3
+### Add a template
+Before we can see our "hello world" website we need to add a template engine and create our first template.
 
-#### Passing data to templates
+Flamingo supports different template engines that can be used for server side rendering. For our example we will simply use go templates.
+So the first thing we need to do, is to add the "gotemplate" module to our flamingo application.
 
-* It is important for controllers to be able to pass data into templates
-* This is done via the render call, as the second parameter (which is currently nil)
-
-First we create a new struct, helloViewData, which we use as the data transfer object for the data that should be available in the template.
-
-We will then pass this data to our template.
-
-For all that, we need to navigate to the file src/helloworld/interfaces/hello_controller.go and change it as follows:
+As before we do this by adding the module to our bootstrap. So we are editing the `main.go` file and add the module:
 
 ```go
-package interfaces
+package main
 
 import (
-	"context"
-
-	"flamingo.me/flamingo/v3/framework/web"
+	"FlamingoExample/src/helloworld"
+	"flamingo.me/dingo"
+	"flamingo.me/flamingo/v3"
+	"flamingo.me/flamingo/v3/core/gotemplate"
 )
 
-type (
-	// HelloController represents our first simple controller
-	HelloController struct {
-		responder *web.Responder
-	}
-
-	helloViewData struct {
-		Name string
-	}
-)
-
-// Inject dependencies
-func (controller *HelloController) Inject(responder *web.Responder) *HelloController{
-	controller.responder = responder
-
-	return controller
-}
-
-// Get is a controller action that renders the `hello.html` template
-func (controller *HelloController) Get(_ context.Context, r *web.Request) web.Result {
-	// Calling the Render method from the response helper and render the template "hello"
-	return controller.responder.Render("hello", helloViewData{
-		Name: "World",
-	})
+func main() {
+	flamingo.App(
+		[]dingo.Module{
+			new(gotemplate.Module),
+			new(helloworld.Module),
+		},
+	)
 }
 ```
 
-As you can see in the `Get` function, we pass the variable `Name` with the value `World` to the ´hello.html` template.
-To use that variable now in our `hello.html` template, we need to change the template accordingly:
-```gotemplate
-<h1>Hello {{ .Name }}</h1>
-```
-Now, you can start the server again with `go run main.go serve` and see the result in the browser when you visit http://localhost:3322/hello.
+> **_Additional explanation:_**  The "gotemplate.Module" registers an implementation for the flamingo TemplateEngine interface. This is following the concept of "ports and adapters". 
+> So technically the gotemplate module uses Dingo to register the adapter (a concrete implementation) for the port. Read more about [ports and adapters](https://docs.flamingo.me/2.%20Flamingo%20Core/1.%20Flamingo%20Basics/4.%20Ports%20and%20Adapters.html) in the documentation.
 
-Now http://localhost:3322/hello will show "Hello World", where the "World" part is the string passed in the controller.
 
-If something doesn't work, you can always compare your code with the master branch.
+The templates are saved in the "templates" folder by default. So please add a file "templates/hello.html" with the following content:
 
-### Step 4
-
-#### Handle URL parameters
-
-Now it's time to handle URL Parameters
-
-There are 3 ways of getting data into the controller:
-
-* POST/Form data
-* GET Parameter
-* URL Path parameter
-
-Create a new Action `GreetMe` in your `src/helloworld/interfaces/hello_controller.go` that will use URL parameters.
-
-The Controller uses r.Query1 to get the first GET Query parameter with the key `name`.
-
-It will return an error if not set, so we can default it to something we want if it's not set.
-
-We will let it default to "World (default)" for now:
-
-```go
-// GreetMe is a controller action that renders the `hello.html` template ands prints a provided URL param
-func (controller *HelloController) GreetMe(_ context.Context, r *web.Request) web.Result {
-	name, err := r.Query1("name")
-	if err != nil {
-		name = "World (default)"
-	}
-	return controller.responder.Render("hello", helloViewData{
-		Name: name,
-	})
-}
-```
-
-Now we need to add new `greetme` routes in the `src/helloworld/module.go`:
-
-```go
-// Routes method which defines all routes handlers in module
-func (r *routes) Routes(registry *web.RouterRegistry) {
-	// Bind the path /hello to a handle with the name "hello"
-	registry.MustRoute("/hello", "hello")
-    
-    // Bind the controller.Action to the handle "hello":
-    registry.HandleGet("hello", r.helloController.Get)
-    
-    registry.HandleGet("helloWorld.greetme", r.helloController.GreetMe)
-    registry.MustRoute("/greetme", "helloWorld.greetme")
-}
-```
-
-Now, you can start the server again with `go run main.go serve` and see the result in the browser when you visit http://localhost:3322/greetme?name=Flamingo.
-
-Now http://localhost:3322/greetme?name=Flamingo will show "Hello Flamingo", where the "Flamingo" part is the "name" parameter passed from the URL via the controller to the template.
-
-#### Path Parameters
-
-Beside "GET" parameters we can also add "Path" parameters
-
-* Extend the module.go, and add another route:
-```go
-// Bind a route with a path parameter
-registry.MustRoute("/greetme/:nickname", "helloWorld.greetme")
-```
-* We can also set default parameters for routes like this:
-```go
-// Bind a route with a default value for a param
-registry.MustRoute("/greetflamingo", `helloWorld.greetme(nickname="Flamingo")`)
-```
-
-Add both routes to the `src/helloworld/module.go` file.
-
-So the routes in the `src/helloworld/module.go` now should look like this:
-```go
-// Routes method which defines all routes handlers in module
-func (r *routes) Routes(registry *web.RouterRegistry) {
-	// Bind the path /hello to a handle with the name "hello"
-	registry.MustRoute("/hello", "hello")
-
-	// Bind the controller.Action to the handle "hello":
-	registry.HandleGet("hello", r.helloController.Get)
-
-	registry.HandleGet("helloWorld.greetme", r.helloController.GreetMe)
-	registry.MustRoute("/greetme", "helloWorld.greetme")
-	// Bind a route with a path parameter
-	registry.MustRoute("/greetme/:nickname", "helloWorld.greetme")
-	// Bind a route with a default value for a param
-	registry.MustRoute("/greetflamingo", `helloWorld.greetme(nickname="Flamingo")`)
-}
-```
-
-Additionally, we need to adjust our controller action to get the `nickname` path variable via `r.Params`.
-
-Go and change it accordingly:
-```go
-// GreetMe is a controller action that renders the `hello.html` template ands prints a provided URL param
-func (controller *HelloController) GreetMe(_ context.Context, r *web.Request) web.Result {
-	name, err := r.Query1("name")
-	if err != nil {
-		name = "World (default)"
-	}
-
-	nick, _ := r.Params["nickname"]
-
-	return controller.responder.Render("hello", helloViewData{
-		Name:     name,
-		Nickname: nick,
-	})
-}
-```
-
-We also need to extend the helloViewData struct, so add the "Nickname":
-
-```go
-helloViewData struct {
-    Name     string
-    Nickname string
-}
-```
-
-Change the "hello.html" template to include the nickname:
-```gotemplate
-<h1>Hello {{ .Name }}</h1>
-{{ if .Nickname }}
-    <h2>Your Nickname is {{ .Nickname }} </h2>
-{{end}}
-```
-
-Now, you can start the server again with `go run main.go serve` and see the result in the browser when you visit:
-
-* http://localhost:3322/greetme/awesome?name=Flamingo
-    * This should show "Flamingo" as "Name" and "awesome" as "Nickname".
-* http://localhost:3322/greetflamingo
-    * This should show "World (default)" as "Name" and "Flamingo" as "Nickname".
-
-If something doesn't work, you can always compare your code with the master branch.
-
-### Step 5
-
-#### Requesting Data from DataActions
-
-One of the important things for templates is to be able to "ask for data". There are cases where a controller can't simply create all data for a view, instead the view/template should be able to request data.
-DataActions work similar to normal Actions, but are called from within templates. So let us check how we can request data.
-
-First in our templates/index.html file we call the templatefunc „data“ to access a data action:
-
-```gotemplate
+```html
 <html>
     <body>
         <h1>Hello World!</h1>
-        <h2>This is the index page</h2>
-        <p>Current time: {{ data "currenttime" }}</p>
     </body>
 </html>
 ```
 
-Running `go run main.go serve` and opening http://localhost:3322/ will now show an exception, because we do not 
-actually have a data action with the name `currenttime`. We need to add a data action to our helloController:
+Now you can run the application again with `go run main.go serve`
+
+And then access the route that we configured above by opening the url "http://localhost:3322/hello" in a browser.
+
+![img.png](docs/hello-img.png)
+
+Congratulation :-)
+
+## Step 4: Using parameters in routes and pass data to template
+
+The next feature we are trying is how to use URL parameters and how to pass data to the template.
+Therefor we want that the application response to the route "/greet/<name>". "<name>" in the route is a dynamic path parameter. So if we call "http://localhost:3322/greet/mickey" we do expect to see "Hello Mickey".
+
+At first we are defining a new action that receives the parameter and passes this parameter to the template:
 
 ```go
-// CurrentTime is a DataAction that handles data calls from templates
-func (controller *HelloController) CurrentTime(ctx context.Context, r *web.Request, callParams web.RequestParams) interface{} {
-	return time.Now().Format(time.RFC822)
+
+// Greet is a controller action that renders the `hello.html` template ands prints a provided URL param
+func (controller *HelloController) Greet(_ context.Context, r *web.Request) web.Result {
+
+	nickname, _ := r.Params["nickname"]
+
+	return controller.responder.Render("hello", struct {
+        Nickname string
+	}{
+        Nickname: nickname,
+	})
 }
+
 ```
 
-After that, we register it as Data Handler in our `module.go`, but without a route (though we could also route it if necessary):
+As you can see in the code the "web.Request" instance gives access to the path parameter. The received value is then passed as the second argument in the "Render()" method call.
 
-```go
-registry.HandleData("currenttime", r.helloController.CurrentTime)
+The passed data can simply be used in the template. So we are adjusting the template with the following content:
+
+```html
+<html>
+<body>
+    <h1>Hello {{ .Nickname }}</h1>
+</body>
+</html>
 ```
 
-So the routes part in the module.go should look like this:
+The next thing we need to do is to update the route definitions.
+Therefore we are adjusting the routes inside the RoutesModule in the file `module.go` like this:
 
-```go
+````go
+
 // Routes method which defines all routes handlers in module
 func (r *routes) Routes(registry *web.RouterRegistry) {
-	// Bind the path /hello to a handle with the name "hello"
-	registry.MustRoute("/hello", "hello")
-
-	// Bind the controller.Action to the handle "hello":
-	registry.HandleGet("hello", r.helloController.Get)
-
-	registry.HandleGet("helloWorld.greetme", r.helloController.GreetMe)
-	registry.MustRoute("/greetme", "helloWorld.greetme")
-	// Bind a route with a path parameter
-	registry.MustRoute("/greetme/:nickname", "helloWorld.greetme")
-	// Bind a route with a default value for a param
-	registry.MustRoute("/greetflamingo", `helloWorld.greetme(nickname="Flamingo")`)
-
-	registry.HandleData("currenttime", r.helloController.CurrentTime)
+  // Bind the path /hello to a handle with the name "hello"
+  registry.MustRoute("/hello", "hello")
+  
+  // Bind the controller.Action to the handle "hello":
+  registry.HandleGet("hello", r.helloController.Hello)
+  
+  // Bind a route with a path parameter
+  registry.MustRoute("/greet/:nickname", "helloWorld.greet")
+  registry.HandleGet("helloWorld.greet", r.helloController.Greet)
 }
 
+````
+As before we are defining a new route handler that has ":nickname" as the placeholder for the url path. 
+Then we assign this route handler to the new action method.
+
+Now please restart your application and open the url "http://localhost:3322/greet/Mickey"
+
+![img.png](docs/greet-img.png)
+
+That was easy - wasn't it.
+
+
+> **_Additional infos:_**  There are different ways of passing dynamic data into an action: 
+> * Use URL Path parameters (like in the example above)
+> * Use GET Parameter in the Url - which you can access with `r.Query1("parametername")` helper
+> * POST/Form data - which you can access with `r.Form()`. Or you may want to have a look into the separate [Flamingo "Form" module](https://github.com/i-love-flamingo/form).
+
+### Step 6: Introducing configurations
+
+Flamingo comes with a configuration concept. Configurations are useful to configure behaviour and features insides your application. 
+It is of course also used in flamingo core modules to enable certain features.
+Configurations are requested as dependency and the dependency injection makes sure that the correct values are passed to the instances.
+
+The main configuration for a flamingo application lives inside the folder "config" in the file config.yaml.
+So lets create the file `config/config.yaml` with the following content:
+```yaml
+flamingo.debug.mode: false
 ```
 
-Now we can run flamingo again, and we have the data from the data action available in our template. The DataAction has 
-access to the request and session data, so it can return everything necessary.
+What we typically want is, that during development we want to run flamingo in debug mode and also with higher log levels. Therefore flamingo support configuration contexts.
+Please create a file `config/config_dev.yaml` with the following content:
+```yaml
+flamingo.debug.mode: true
+```
 
-If something doesn't work, you can always compare your code with the master branch.
+And now run the application in "dev" context and print out the loaded configuration with the "config" command:
+```shell
+CONTEXT="dev" go run main.go config
+```
+
+
+> **_Additional infos:_**  Flamingo has a very flexible and powerful configuration concept. 
+> In addition to the configuration contexts it supports multiple configuration areas (which is useful for localization) and validation of configurations options based on [cue](https://cuelang.org/docs/integrations/go/).
+> Read more about the [configuration features](https://docs.flamingo.me/2.%20Flamingo%20Core/2.%20Framework%20Modules/Configuration.html) in flamingo.
+
+
+### Step 7: Operational Readiness and other helpful modules
+
+Flamingo comes with features and modules that makes it easy to run and monitor applications in production.
+So lets add some typical modules to the application bootstrap:
+
+```go
+package main
+
+import (
+	"flamingo.me/dingo"
+	"flamingo.me/example-helloworld/src/helloworld"
+	"flamingo.me/flamingo/v3"
+	"flamingo.me/flamingo/v3/core/gotemplate"
+	"flamingo.me/flamingo/v3/core/healthcheck"
+	"flamingo.me/flamingo/v3/core/requestlogger"
+	"flamingo.me/flamingo/v3/core/zap"
+	"flamingo.me/flamingo/v3/framework/opencensus"
+)
+
+// main is our entry point
+func main() {
+	flamingo.App([]dingo.Module{
+		new(healthcheck.Module),
+		new(opencensus.Module),
+		new(zap.Module),           
+		new(requestlogger.Module), 
+		new(gotemplate.Module),   
+		new(helloworld.Module),
+	})
+}
+```
+Lets go through all of them quickly:
+
+#### healthcheck module
+This module uses an additional http endpoint on a separate port (default 13210) and adds useful endpoints:
+
+* http://localhost:13210/status/ping - That responses with Status 200 and "OK" once the flamingo application is ready. This can be used as a readinessProbe in kubernetes for example.
+* http://localhost:13210/status/healthcheck - End endpoint that returns the health of the application. You can register individual checks for your application - e.g. to check downstream dependencies. Flamingo modules like the sesssion module also make use of this.
+
+#### opencensus module
+
+This module adds a metric andpoint that can be used as a scrap endpoint by tools like prometheus to fetch useful metrics.
+Flamingo already provided a lot of standard metrics and you can use the opencensus module to register own metrics.
+
+Try it out and open http://localhost:13210/metrics
+
+![img.png](docs/metrics-img.png)
+
+#### zap module
+Make use of the popular zap logger.
+With the usage of the flamingo configuration contexts you can configure the logging for production and development in a different way.
+
+Configure json log format for production (which is useful for tools that collect logs like logstash) inside the file `config.yaml`
+```yaml
+core:
+  zap:
+    loglevel: Warn
+    json: false
+```
+
+And configure log formatting for local development inside `config_dev.yaml`
+```yaml
+core:
+  zap:
+    loglevel: Debug
+    colored: true
+    json: false
+```
+
+#### requestlogger module
+This module provides access logs for requests to your application - they also include traceIds and spanIds.
+![img.png](docs/logs-img.png)
+
+
+As you see adding the most important features to provide traceability and monitoring was pretty easy.
+
+> **_Additional infos:_**  More about running [Flamingo in productio](https://docs.flamingo.me/2.%20Flamingo%20Core/1.%20Flamingo%20Basics/5.%20Flamingo%20Production.html).
+
 
 Congratulations! You completed all steps in the Flamingo Hello World Example and learned some basic Flamingo features.

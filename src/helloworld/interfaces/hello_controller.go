@@ -8,7 +8,7 @@ import (
 )
 
 type (
-	// HelloController represents our first simple controller
+	// Hello represents our first simple controller
 	HelloController struct {
 		responder *web.Responder
 	}
@@ -27,15 +27,15 @@ func (controller *HelloController) Inject(responder *web.Responder) *HelloContro
 }
 
 // Get is a controller action that renders the `hello.html` template
-func (controller *HelloController) Get(_ context.Context, r *web.Request) web.Result {
+func (controller *HelloController) Hello(_ context.Context, r *web.Request) web.Result {
 	// Calling the Render method from the response helper and render the template "hello"
 	return controller.responder.Render("hello", helloViewData{
 		Name: "World",
 	})
 }
 
-// GreetMe is a controller action that renders the `hello.html` template ands prints a provided URL param
-func (controller *HelloController) GreetMe(_ context.Context, r *web.Request) web.Result {
+// Greet is a controller action that renders the `hello.html` template ands prints a provided URL param
+func (controller *HelloController) Greet(_ context.Context, r *web.Request) web.Result {
 	name, err := r.Query1("name")
 	if err != nil {
 		name = "World (default)"
