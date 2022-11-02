@@ -478,7 +478,7 @@ This module provides access logs for requests to your application - they also in
 
 As you see adding the most important features to provide traceability and monitoring was pretty easy.
 
-> **_Additional infos:_**  More about running [Flamingo in productio](https://docs.flamingo.me/2.%20Flamingo%20Core/1.%20Flamingo%20Basics/5.%20Flamingo%20Production.html).
+> More about running [Flamingo in production](https://docs.flamingo.me/2.%20Flamingo%20Core/1.%20Flamingo%20Basics/5.%20Flamingo%20Production.html) can be found in the documentation.
 
 
 Congratulations! You completed all steps in the Flamingo Hello World Example and learned some basic Flamingo features.
