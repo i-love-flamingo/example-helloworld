@@ -1,7 +1,7 @@
 # Flamingo Tutorial "Example Helloworld"
 
-The "example-helloworld" is a tutorial to learn the basic concepts of the web framework flamingo in a step by step process.
-In this tutorial we will create a web application that renders a template with some dynamic data. 
+The "example-helloworld" is a tutorial to learn the basic concepts of the application framework flamingo in a step by step process.
+In this tutorial we will create a web application that renders a template with some dynamic data and also offers a simple API.
 At the end of the tutorial this application is production ready and can be deployed - for example in a container runtime.
 
 You will come into contact with some basic concepts and principles when creating Go applications with the Flamingo web framework.
@@ -187,7 +187,7 @@ Lets have a closer look at the code and walk through the important lines togethe
 * In line 8 we define the controller struct. In flamingo a web controller should use the `web.Responder` type to render responses. So we define this as a private dependency in our controller.
 * In line 13 we are using the dependency injection feature of dingo (=the flamingo dependency injection) by implementing an Inject method, that requests all the dependency as parameters. Dingo will make sure that the controller will get its dependencies injected.
 * In line 20 we are implementing our first action method. Each web action gets the go context and the current web request as parameter. 
-* In line 22 we are using the Responder type to render a response. The first parameter is the name of the template that should be rendered - we will create it later.
+* In line 22 we are using the "render" method to render a template. The first parameter is the name of the template that should be rendered - we will create it later.
 
 
 > **_More about Dingo:_**  Dingo is the dependency injection that it used in flamingo.
@@ -308,7 +308,7 @@ Congratulation :-)
 ## Step 3: Using parameters in routes and pass data to template
 
 The next feature we are trying is how to use URL parameters and how to pass data to the template.
-Therefor we want that the application response to the route "/greet/<name>". "<name>" in the route is a dynamic path parameter. So if we call "http://localhost:3322/greet/mickey" we do expect to see "Hello Mickey".
+Therefor we want that the application response to the route "/greet/&lt;name>". "&lt;name>" in the route is a dynamic path parameter. So if we call "http://localhost:3322/greet/mickey" we do expect to see "Hello Mickey".
 
 At first we are defining a new action that receives the parameter and passes this parameter to the template:
 
