@@ -4,7 +4,7 @@ The "example-helloworld" is a tutorial to learn the basic concepts of the web fr
 In this tutorial we will create a web application that renders a template with some dynamic data. 
 At the end of the tutorial this application is production ready and can be deployed - for example in a container runtime.
 
-You will get in touch with some of the basic concepts and principles, when you create go applications with the web framework flamingo.
+You will come into contact with some basic concepts and principles when creating Go applications with the Flamingo web framework.
 
 For example:
 * The basic module structure in a flamingo project
@@ -29,6 +29,7 @@ Open http://localhost:3322 to access the example application.
 ## Step 1: Create an empty Application
 
 We start by creating a new Go application and we are adding the flamingo framework as a dependency:
+
 
 ```ssh
 mkdir FlamingoExample
