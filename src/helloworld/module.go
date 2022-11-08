@@ -40,7 +40,7 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleGet("helloWorld.greet", r.helloController.Greet)
 
 	registry.MustRoute("/api", "helloWorld.api")
-	registry.HandleGet("helloWorld.api", r.helloController.HelloJSON)
+	registry.HandleGet("helloWorld.api", r.helloController.ApiHello)
 
 	// Bind a route with a path parameter
 	registry.MustRoute("/greet/:nickname", "helloWorld.greet")

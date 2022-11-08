@@ -374,7 +374,35 @@ That was easy - wasn't it.
 > * Use GET Parameter in the Url - which you can access with `r.Query1("parametername")` helper
 > * POST/Form data - which you can access with `r.Form()`. Or you may want to have a look into the separate [Flamingo "Form" module](https://github.com/i-love-flamingo/form).
 
-### Step 4: Introducing configurations
+### Step 4: Add a simple API
+
+Of course flamingo can be used to build applications that provide various APIs.
+For our example we are going to add a route "/api" and bind this to a simple action that returns some JSON response.
+
+Therfore you need to add the following action method to your controller:
+
+```go
+
+// ApiHello is a controller action that renders Data
+func (controller *HelloController) ApiHello(_ context.Context, r *web.Request) web.Result {
+	// Calling the Render method from the response helper and render the template "hello"
+	return controller.responder.Data(helloViewData{
+		Name: "World",
+	})
+}
+```
+
+As you can see in this action, the responder's "Data" method is used to return the passed data as JSON.
+
+The related route also need to be registered like this (inside your RouteModule):
+
+```go
+	registry.MustRoute("/api", "helloWorld.api")
+	registry.HandleGet("helloWorld.api", r.helloController.ApiHello)
+```
+
+
+### Step 5: Introducing configurations
 
 Flamingo comes with a configuration concept. Configurations are useful to configure behaviour and features insides your application. 
 It is of course also used in flamingo core modules to enable certain features.
