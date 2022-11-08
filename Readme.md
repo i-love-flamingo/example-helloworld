@@ -374,7 +374,7 @@ That was easy - wasn't it.
 > * Use GET Parameter in the Url - which you can access with `r.Query1("parametername")` helper
 > * POST/Form data - which you can access with `r.Form()`. Or you may want to have a look into the separate [Flamingo "Form" module](https://github.com/i-love-flamingo/form).
 
-### Step 4: Add a simple API
+## Step 4: Add a simple API
 
 Of course flamingo can be used to build applications that provide various APIs.
 For our example we are going to add a route "/api" and bind this to a simple action that returns some JSON response.
@@ -402,7 +402,7 @@ The related route also need to be registered like this (inside your RouteModule)
 ```
 
 
-### Step 5: Introducing configurations
+## Step 5: Introducing configurations
 
 Flamingo comes with a configuration concept. Configurations are useful to configure behaviour and features insides your application. 
 It is of course also used in flamingo core modules to enable certain features.
@@ -431,7 +431,7 @@ CONTEXT="dev" go run main.go config
 > Read more about the [configuration features](https://docs.flamingo.me/2.%20Flamingo%20Core/2.%20Framework%20Modules/Configuration.html) in flamingo.
 
 
-### Step 5: Operational Readiness and other helpful modules
+## Step 6: Operational Readiness and other helpful modules
 
 Flamingo comes with features and modules that makes it easy to run and monitor applications in production.
 So lets add some typical modules to the application bootstrap:
@@ -464,13 +464,14 @@ func main() {
 ```
 Lets go through all of them quickly:
 
-#### healthcheck module
+### healthcheck module
 This module uses an additional http endpoint on a separate port (default 13210) and adds useful endpoints:
 
 * http://localhost:13210/status/ping - That responses with Status 200 and "OK" once the flamingo application is ready. This can be used as a readinessProbe in kubernetes for example.
 * http://localhost:13210/status/healthcheck - End endpoint that returns the health of the application. You can register individual checks for your application - e.g. to check downstream dependencies. Flamingo modules like the sesssion module also make use of this.
+* Tracing: This module also comes with support for jaeger and zipkin. You can enable the tracing exporters and configure the endpoint in the configuration.
 
-#### opencensus module
+### opencensus module
 
 This module adds a metric andpoint that can be used as a scrap endpoint by tools like prometheus to fetch useful metrics.
 Flamingo already provided a lot of standard metrics and you can use the opencensus module to register own metrics.
@@ -479,7 +480,7 @@ Try it out and open http://localhost:13210/metrics
 
 ![img.png](docs/metrics-img.png)
 
-#### zap module
+### zap module
 Make use of the popular zap logger.
 With the usage of the flamingo configuration contexts you can configure the logging for production and development in a different way.
 
@@ -500,7 +501,7 @@ core:
     json: false
 ```
 
-#### requestlogger module
+### requestlogger module
 This module provides access logs for requests to your application - they also include traceIds and spanIds.
 ![img.png](docs/logs-img.png)
 
