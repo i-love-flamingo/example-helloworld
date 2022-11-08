@@ -386,9 +386,11 @@ Therfore you need to add the following action method to your controller:
 // ApiHello is a controller action that renders Data
 func (controller *HelloController) ApiHello(_ context.Context, r *web.Request) web.Result {
 	// Calling the Render method from the response helper and render the template "hello"
-	return controller.responder.Data(helloViewData{
-		Name: "World",
-	})
+	return controller.responder.Data(struct {
+                Nickname string
+              }{
+                Nickname: nickname,
+              })
 }
 ```
 
