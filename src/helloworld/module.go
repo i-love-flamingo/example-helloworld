@@ -33,12 +33,15 @@ func (r *routes) Inject(controller *interfaces.HelloController) *routes {
 func (r *routes) Routes(registry *web.RouterRegistry) {
 	// Bind the path /hello to a handle with the name "hello"
 	registry.MustRoute("/hello", "helloWorld.hello")
-
 	// Bind the controller.Action to the handle "hello":
 	registry.HandleGet("helloWorld.hello", r.helloController.Hello)
 
-	registry.HandleGet("helloWorld.greet", r.helloController.Greet)
 	registry.MustRoute("/greet", "helloWorld.greet")
+	registry.HandleGet("helloWorld.greet", r.helloController.Greet)
+
+	registry.MustRoute("/api", "helloWorld.api")
+	registry.HandleGet("helloWorld.api", r.helloController.HelloJSON)
+
 	// Bind a route with a path parameter
 	registry.MustRoute("/greet/:nickname", "helloWorld.greet")
 
@@ -46,4 +49,5 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.MustRoute("/greetflamingo", `helloWorld.greet(nickname="Flamingo")`)
 
 	registry.HandleData("currenttime", r.helloController.CurrentTime)
+
 }

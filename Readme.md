@@ -2,7 +2,7 @@
 
 The "example-helloworld" is a tutorial to learn the basic concepts of the web framework flamingo in a step by step process.
 In this tutorial we will create a web application that renders a template with some dynamic data. 
-At the end of the tutorial this application is production ready and can be deployed in a container runtime.
+At the end of the tutorial this application is production ready and can be deployed - for example in a container runtime.
 
 You will get in touch with some of the basic concepts and principles, when you create go applications with the web framework flamingo.
 

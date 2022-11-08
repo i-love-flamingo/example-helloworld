@@ -49,6 +49,14 @@ func (controller *HelloController) Greet(_ context.Context, r *web.Request) web.
 	})
 }
 
+// HelloJSON is a controller action that renders Data
+func (controller *HelloController) HelloJSON(_ context.Context, r *web.Request) web.Result {
+	// Calling the Render method from the response helper and render the template "hello"
+	return controller.responder.Data(helloViewData{
+		Name: "World",
+	})
+}
+
 // CurrentTime is a DataAction that handles data calls from templates
 func (controller *HelloController) CurrentTime(ctx context.Context, r *web.Request, params web.RequestParams) interface{} {
 	return time.Now().Format(time.RFC822)
