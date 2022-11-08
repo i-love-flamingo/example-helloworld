@@ -429,7 +429,7 @@ CONTEXT="dev" go run main.go config
 
 
 > **_Additional infos:_**  Flamingo has a very flexible and powerful configuration concept. 
-> In addition to the configuration contexts it supports multiple configuration areas (which is useful for localization) and validation of configurations options based on [cue](https://cuelang.org/docs/integrations/go/).
+> In addition to the configuration contexts it supports multiple configuration areas (which is useful for localization) and validation of configurations based on [cue](https://cuelang.org/docs/integrations/go/).
 > Read more about the [configuration features](https://docs.flamingo.me/2.%20Flamingo%20Core/2.%20Framework%20Modules/Configuration.html) in flamingo.
 
 
@@ -491,7 +491,7 @@ Configure json log format for production (which is useful for tools that collect
 core:
   zap:
     loglevel: Warn
-    json: false
+    json: true
 ```
 
 And configure log formatting for local development inside `config_dev.yaml`
