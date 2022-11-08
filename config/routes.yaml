@@ -6,4 +6,5 @@
   controller: flamingo.render(tpl="index")
 
 - path: /redirect
+  name: redirectTest
   controller: flamingo.redirect(to="index")

@@ -26,16 +26,16 @@ func (controller *HelloController) Inject(responder *web.Responder) *HelloContro
 	return controller
 }
 
-// Get is a controller action that renders the `hello.html` template
-func (controller *HelloController) Get(_ context.Context, r *web.Request) web.Result {
+// Hello is a controller action that renders the `hello.html` template
+func (controller *HelloController) Hello(_ context.Context, r *web.Request) web.Result {
 	// Calling the Render method from the response helper and render the template "hello"
 	return controller.responder.Render("hello", helloViewData{
 		Name: "World",
 	})
 }
 
-// GreetMe is a controller action that renders the `hello.html` template ands prints a provided URL param
-func (controller *HelloController) GreetMe(_ context.Context, r *web.Request) web.Result {
+// Greet is a controller action that renders the `hello.html` template ands prints a provided URL param
+func (controller *HelloController) Greet(_ context.Context, r *web.Request) web.Result {
 	name, err := r.Query1("name")
 	if err != nil {
 		name = "World (default)"
@@ -46,6 +46,14 @@ func (controller *HelloController) GreetMe(_ context.Context, r *web.Request) we
 	return controller.responder.Render("hello", helloViewData{
 		Name:     name,
 		Nickname: nick,
+	})
+}
+
+// HelloJSON is a controller action that renders Data
+func (controller *HelloController) HelloJSON(_ context.Context, r *web.Request) web.Result {
+	// Calling the Render method from the response helper and render the template "hello"
+	return controller.responder.Data(helloViewData{
+		Name: "World",
 	})
 }
 

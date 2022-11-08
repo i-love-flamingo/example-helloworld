@@ -1,4 +1,4 @@
-flamingo.debug.mode: false
+flamingo.debug.mode: true
 
 core:
   zap:
