@@ -385,6 +385,9 @@ Therfore you need to add the following action method to your controller:
 
 // ApiHello is a controller action that renders Data
 func (controller *HelloController) ApiHello(_ context.Context, r *web.Request) web.Result {
+
+	nickname, _ := r.Params["nickname"]
+
 	// Calling the Render method from the response helper and render the template "hello"
 	return controller.responder.Data(struct {
                 Nickname string
@@ -399,7 +402,7 @@ As you can see in this action, the responder's "Data" method is used to return t
 The related route also need to be registered like this (inside your RouteModule):
 
 ```go
-	registry.MustRoute("/api", "helloWorld.api")
+	registry.MustRoute("/api:nickname", "helloWorld.api")
 	registry.HandleGet("helloWorld.api", r.helloController.ApiHello)
 ```
 
