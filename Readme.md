@@ -237,7 +237,7 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
   registry.MustRoute("/hello", "hello")
 
   // Bind the controller.Action to the handle "hello":
-  registry.HandleGet("hello", r.helloController.Hello)
+  registry.HandleGet("hello", r.helloController.Get)
 }
 ```
 
