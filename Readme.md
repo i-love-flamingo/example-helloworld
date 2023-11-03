@@ -175,8 +175,8 @@ func (controller *HelloController) Inject(responder *web.Responder) *HelloContro
 	return controller
 }
 
-// Get is a controller action that renders the `hello.html` template
-func (controller *HelloController) Get(ctx context.Context, r *web.Request) web.Result {
+// Hello is a controller action that renders the `hello.html` template
+func (controller *HelloController) Hello(ctx context.Context, r *web.Request) web.Result {
 	// Calling the Render method from the response helper and render the template "hello"
 	return controller.responder.Render("hello", nil)
 }
