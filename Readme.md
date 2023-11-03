@@ -237,7 +237,7 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
   registry.MustRoute("/hello", "hello")
 
   // Bind the controller.Action to the handle "hello":
-  registry.HandleGet("hello", r.helloController.Hello)
+  registry.HandleGet("hello", r.helloController.Get)
 }
 ```
 
@@ -351,7 +351,7 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
   registry.MustRoute("/hello", "hello")
   
   // Bind the controller.Action to the handle "hello":
-  registry.HandleGet("hello", r.helloController.Hello)
+  registry.HandleGet("hello", r.helloController.Get)
   
   // Bind a route with a path parameter
   registry.MustRoute("/greet/:nickname", "helloWorld.greet")
@@ -385,6 +385,9 @@ Therfore you need to add the following action method to your controller:
 
 // ApiHello is a controller action that renders Data
 func (controller *HelloController) ApiHello(_ context.Context, r *web.Request) web.Result {
+
+	nickname, _ := r.Params["nickname"]
+
 	// Calling the Render method from the response helper and render the template "hello"
 	return controller.responder.Data(struct {
                 Nickname string
@@ -399,7 +402,7 @@ As you can see in this action, the responder's "Data" method is used to return t
 The related route also need to be registered like this (inside your RouteModule):
 
 ```go
-	registry.MustRoute("/api", "helloWorld.api")
+	registry.MustRoute("/api:nickname", "helloWorld.api")
 	registry.HandleGet("helloWorld.api", r.helloController.ApiHello)
 ```
 
@@ -442,8 +445,9 @@ So lets add some typical modules to the application bootstrap:
 package main
 
 import (
+	"FlamingoExample/src/helloworld"
+
 	"flamingo.me/dingo"
-	"flamingo.me/example-helloworld/src/helloworld"
 	"flamingo.me/flamingo/v3"
 	"flamingo.me/flamingo/v3/core/gotemplate"
 	"flamingo.me/flamingo/v3/core/healthcheck"
