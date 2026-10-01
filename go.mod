@@ -1,8 +1,6 @@
 module flamingo.me/example-helloworld
 
-go 1.22
-
-toolchain go1.23.2
+go 1.26.0
 
 require (
 	flamingo.me/dingo v0.2.10
